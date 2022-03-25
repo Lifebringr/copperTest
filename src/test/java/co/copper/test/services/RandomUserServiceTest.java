@@ -4,17 +4,26 @@ import co.copper.test.datamodel.RandomUser;
 import co.copper.test.datamodel.RandomUserResponse;
 import co.copper.test.storage.RandomUserRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static co.copper.test.services.RandomUserService.RANDOM_USERS_API;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class RandomUserServiceTest {
 
+
+    @Captor
+    private ArgumentCaptor<List<RandomUser>> randomUsersCaptor;
     @Test
     void getAllRandomUsersWillRetrieveAllRandomUsersFromTheRepository() {
         RandomUserRepository mockRepository = mock(RandomUserRepository.class);
@@ -29,6 +38,18 @@ class RandomUserServiceTest {
 
     @Test
     void download20() {
-//TODO: parked for now
+        RandomUserRepository mockRepository = mock(RandomUserRepository.class);
+        RestTemplate mockRestTemplate = mock(RestTemplate.class);
+        RandomUser sampleUser = new RandomUser();
+        List<RandomUser> expectedUsers = List.of(sampleUser);
+        RandomUserResponse randomUserResponse = new RandomUserResponse();
+        randomUserResponse.results = expectedUsers;
+
+        when(mockRestTemplate.getForObject(RANDOM_USERS_API, RandomUserResponse.class)).thenReturn(randomUserResponse);
+
+        RandomUserService randomUserService = new RandomUserService(mockRepository, mockRestTemplate);
+        randomUserService.download20();
+        verify(mockRepository).saveAll(randomUsersCaptor.capture());
+        assertEquals(expectedUsers, randomUsersCaptor.getValue());
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 public class RandomUserService {
 
     private static final Logger log = LoggerFactory.getLogger(RandomUserService.class);
+    public static final String RANDOM_USERS_API = "https://randomuser.me/api?results=20";
     private final RandomUserRepository randomUserRepository;
     private final RestTemplate restTemplate;
 
@@ -26,7 +27,7 @@ public class RandomUserService {
     }
 
     public Integer download20() {
-        RandomUserResponse randomUserResponse = this.restTemplate.getForObject("https://randomuser.me/api?results=20", RandomUserResponse.class);
+        RandomUserResponse randomUserResponse = this.restTemplate.getForObject(RANDOM_USERS_API, RandomUserResponse.class);
         randomUserRepository.saveAll(randomUserResponse.results);
         return randomUserResponse.results.size();
     }
