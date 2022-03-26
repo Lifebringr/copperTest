@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface RandomUserRepository extends CrudRepository<RandomUser,Long> {
+public interface RandomUserRepository extends CrudRepository<RandomUser,String> {
 
 }
